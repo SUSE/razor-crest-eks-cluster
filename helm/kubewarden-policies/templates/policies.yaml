@@ -1,0 +1,51 @@
+apiVersion: policies.kubewarden.io/v1alpha2
+kind: ClusterAdmissionPolicy
+metadata:
+  name: privileged-pods
+spec:
+  module: registry://ghcr.io/kubewarden/policies/pod-privileged:v0.1.5
+  namespaceSelector:
+    matchExpressions:
+      - key: system-namespace
+        operator: NotIn
+        values:
+          - "true"
+  rules:
+    - apiGroups: [""]
+      apiVersions: ["v1"]
+      resources: ["pods"]
+      operations:
+        - CREATE
+        - UPDATE
+      scope: "Namespaced"
+  mutating: false
+---
+apiVersion: policies.kubewarden.io/v1alpha2
+kind: ClusterAdmissionPolicy
+metadata:
+  name: safe-labels
+spec:
+  module: registry://ghcr.io/tmuntaner/policies/required-labels:latest
+  namespaceSelector:
+    matchExpressions:
+      - key: system-namespace
+        operator: NotIn
+        values:
+          - "true"
+  rules:
+    - apiGroups: [""]
+      apiVersions: ["v1"]
+      resources: ["pods"]
+      operations:
+        - CREATE
+        - UPDATE
+      scope: "Namespaced"
+  mutating: false
+  settings:
+    required_labels:
+      - name: owner
+        allowed_values:
+          - razor-crest
+      - name: cost-center
+        allowed_values:
+          - cc-42

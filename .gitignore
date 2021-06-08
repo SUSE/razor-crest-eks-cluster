@@ -1,2 +1,4 @@
 .idea
 *.iml
+terraform/.terraform
+terraform/terraform.tfstate.d
